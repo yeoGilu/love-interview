@@ -262,10 +262,11 @@
             try {
                 const text = await callGeminiAPI(prompt);
                 box.innerHTML = `<p class="text-stone-800 font-medium text-sm leading-relaxed">"${text.trim()}"</p>`;
-            } catch (error) {
-                console.error(error);
-                box.innerHTML = `<p class="text-red-400 text-xs">서버 연결이 원활하지 않습니다.<br>잠시 후 다시 시도해주세요.</p>`;
-            } finally {
+           } catch (error) {
+    console.error(error);
+    // 에러 내용을 화면에 직접 보여줍니다.
+    box.innerHTML = `<p class="text-red-500 text-xs font-bold">오류 발생:<br>${error.message}</p>`;
+} finally {
                 btn.disabled = false;
                 btn.innerHTML = '<span>💬 다른 질문 보기</span>';
             }
@@ -274,4 +275,5 @@
 </body>
 
 </html>
+
 
