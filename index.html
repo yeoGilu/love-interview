@@ -157,36 +157,39 @@
         </div>
     </div>
 
-    <script>
+<script>
         lucide.createIcons();
 
-        // Gemini API Configuration
-        const apiKey = "AIzaSyCXmPthkkm8I8-l2ccmlsGk4DW_IJ5dw6k"; // Runtime environment provides the key
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        // [중요] 여기에 방금 복사한 Google Apps Script 웹 앱 URL을 넣으세요!
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/여기에_복사한_URL을_붙여넣으세요/exec";
 
-        async function callGeminiAPI(prompt, retries = 3) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{ text: prompt }]
-                            }]
-                        })
-                    });
+        async function callGeminiAPI(prompt) {
+            try {
+                // 더 이상 API Key를 여기에 노출하지 않습니다.
+                // Google Apps Script로 요청을 보냅니다.
+                const response = await fetch(GAS_WEB_APP_URL, {
+                    method: 'POST',
+                    // Google Apps Script는 CORS 정책 때문에 'no-cors'를 쓰거나
+                    // text/plain으로 보내야 simple request로 처리되어 전송이 원활합니다.
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8', 
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
 
-                    if (!response.ok) throw new Error('API Error');
+                if (!response.ok) throw new Error('Network response was not ok');
 
-                    const data = await response.json();
-                    return data.candidates[0].content.parts[0].text;
-                } catch (error) {
-                    if (i === retries - 1) throw error;
-                    await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i))); // Exponential backoff
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
                 }
+                
+                return data.result;
+
+            } catch (error) {
+                console.error("Error calling proxy:", error);
+                throw error;
             }
         }
 
@@ -223,12 +226,11 @@
                 const text = await callGeminiAPI(prompt);
                 const lines = text.split('\n').filter(line => line.trim() !== '');
                 
-                // Simple parsing (robustness can be improved with regex or JSON mode)
                 let title = lines[0] || "매력적인 주인공";
                 let desc = lines.slice(1).join(' ') || "당신의 이야기는 무대 위에서 가장 빛날 것입니다.";
 
-                // Cleanup brackets if present
-                title = title.replace(/\[|\]/g, ''); 
+                title = title.replace(/\[|\]/g, '').replace(/\*/g, ''); 
+                desc = desc.replace(/\[|\]/g, '').replace(/\*/g, '');
 
                 titleEl.textContent = title;
                 descEl.textContent = desc;
@@ -253,9 +255,8 @@
                 20대 대상 연애 심리 인터뷰를 위한 깊이 있는 질문 하나를 생성해줘.
                 주제: 사랑, 이별, 자존감, 인간관계, 이상형 등.
                 분위기: 너무 딱딱하지 않으면서도 생각할 거리를 주는 질문.
-                예시: "사랑의 유효기간이 있다고 생각하시나요?", "나의 자존감이 가장 낮아졌던 연애 경험은?"
                 
-                질문 하나만 딱 출력해줘. 한국어로.
+                질문 하나만 딱 출력해줘. 부가 설명 없이. 한국어로.
             `;
 
             try {
@@ -263,7 +264,7 @@
                 box.innerHTML = `<p class="text-stone-800 font-medium text-sm leading-relaxed">"${text.trim()}"</p>`;
             } catch (error) {
                 console.error(error);
-                box.innerHTML = `<p class="text-red-400 text-xs">질문 생성 실패. 다시 시도해주세요.</p>`;
+                box.innerHTML = `<p class="text-red-400 text-xs">서버 연결이 원활하지 않습니다.<br>잠시 후 다시 시도해주세요.</p>`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<span>💬 다른 질문 보기</span>';
@@ -271,4 +272,5 @@
         }
     </script>
 </body>
+
 </html>
