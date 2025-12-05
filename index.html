@@ -48,16 +48,19 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* 스크롤 애니메이션 */
+        
+        /* [중요] 애니메이션 CSS 수정 */
         .reveal {
-            opacity: 0;
-            transform: translateY(30px);
+            opacity: 0; /* 기본은 투명 */
+            transform: translateY(20px);
             transition: all 0.8s ease-out;
         }
+        /* active 클래스가 붙으면 보임 */
         .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
+
         /* FAQ 아코디언 스타일 */
         details > summary {
             list-style: none;
@@ -282,30 +285,33 @@
         lucide.createIcons();
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyXgxqgWrmIurQgIUENqH2TcSZa_gwZm53jY3caH9Y6bdf65v9UO_q5mrr-7939MBbi/exec";
 
-        // 스크롤 애니메이션 (수정됨: 더 민감하게 작동하고 로드 시 바로 체크)
-        function revealOnScroll() {
-            var reveals = document.querySelectorAll(".reveal");
-            var windowHeight = window.innerHeight;
-            var elementVisible = 20; // 50 -> 20으로 수정하여 더 조금만 보여도 나타나게 함
+        // [핵심 수정] IntersectionObserver를 사용하여 화면에 들어오면 무조건 보이게 설정
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1 // 요소가 10%만 보여도 작동
+            };
 
-            for (var i = 0; i < reveals.length; i++) {
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                
-                // 화면에 들어왔거나, 이미 지나갔거나, 스크롤이 끝까지 내려왔을 경우
-                if (elementTop < windowHeight - elementVisible || elementTop < windowHeight) {
-                    reveals[i].classList.add("active");
-                }
-            }
-        }
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    // 화면에 들어왔을 때
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // 한번 보였으면 관찰 중단 (성능 최적화)
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
 
-        // 이벤트 리스너 추가 (로드 시, 스크롤 시, 리사이즈 시 모두 체크)
-        window.addEventListener("scroll", revealOnScroll);
-        window.addEventListener("resize", revealOnScroll); // 화면 크기 변경 시에도 체크
-        window.addEventListener("load", revealOnScroll);   // 페이지 로딩 완료 시 강제 체크
-        
-        // 초기 실행 (약간의 딜레이 후 한 번 더 실행하여 확실하게 표시)
-        revealOnScroll();
-        setTimeout(revealOnScroll, 100); 
+            const reveals = document.querySelectorAll('.reveal');
+            reveals.forEach(el => observer.observe(el));
+
+            // [안전장치] 혹시라도 JS가 꼬여서 안 보일 경우를 대비해 0.5초 뒤 강제로 전부 표시
+            setTimeout(() => {
+                reveals.forEach(el => el.classList.add('active'));
+            }, 500);
+        });
 
         // 토스트 알림 함수
         function showToast(message) {
