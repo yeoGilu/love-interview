@@ -239,6 +239,7 @@
                         안전하게 폐기됩니다.
                     </p>
                 </div>
+                
                 <div onclick="copyFormToClipboard()" class="bg-orange-700 text-white py-3 px-6 rounded-full inline-block w-full shadow-lg hover:bg-orange-800 transition-colors cursor-pointer active:scale-95 transform duration-100">
                     <p class="text-sm font-medium flex items-center justify-center gap-2">
                         <i data-lucide="copy" class="w-4 h-4"></i>
@@ -281,20 +282,30 @@
         lucide.createIcons();
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyXgxqgWrmIurQgIUENqH2TcSZa_gwZm53jY3caH9Y6bdf65v9UO_q5mrr-7939MBbi/exec";
 
-        // 스크롤 애니메이션
+        // 스크롤 애니메이션 (수정됨: 더 민감하게 작동하고 로드 시 바로 체크)
         function revealOnScroll() {
             var reveals = document.querySelectorAll(".reveal");
+            var windowHeight = window.innerHeight;
+            var elementVisible = 20; // 50 -> 20으로 수정하여 더 조금만 보여도 나타나게 함
+
             for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
                 var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 50; 
-                if (elementTop < windowHeight - elementVisible) {
+                
+                // 화면에 들어왔거나, 이미 지나갔거나, 스크롤이 끝까지 내려왔을 경우
+                if (elementTop < windowHeight - elementVisible || elementTop < windowHeight) {
                     reveals[i].classList.add("active");
                 }
             }
         }
+
+        // 이벤트 리스너 추가 (로드 시, 스크롤 시, 리사이즈 시 모두 체크)
         window.addEventListener("scroll", revealOnScroll);
+        window.addEventListener("resize", revealOnScroll); // 화면 크기 변경 시에도 체크
+        window.addEventListener("load", revealOnScroll);   // 페이지 로딩 완료 시 강제 체크
+        
+        // 초기 실행 (약간의 딜레이 후 한 번 더 실행하여 확실하게 표시)
         revealOnScroll();
+        setTimeout(revealOnScroll, 100); 
 
         // 토스트 알림 함수
         function showToast(message) {
