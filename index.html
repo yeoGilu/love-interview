@@ -49,16 +49,21 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* [중요] 애니메이션 CSS 수정 */
-        .reveal {
-            opacity: 0; /* 기본은 투명 */
-            transform: translateY(20px);
-            transition: all 0.8s ease-out;
+        /* [수정됨] 안전한 애니메이션: CSS로만 작동하여 100% 작동 보장 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        /* active 클래스가 붙으면 보임 */
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
+
+        .animate-entry {
+            opacity: 0; /* 초기 상태 */
+            animation: fadeInUp 0.8s ease-out forwards; /* 로드 즉시 실행 */
         }
 
         /* FAQ 아코디언 스타일 */
@@ -101,12 +106,12 @@
 
     <div class="w-full max-w-md bg-paper card-shadow rounded-xl overflow-hidden relative mx-4 flex flex-col">
         
-        <div class="bg-orange-800 text-white p-8 text-center relative overflow-hidden">
+        <div class="bg-orange-800 text-white p-8 text-center relative overflow-hidden animate-entry" style="animation-delay: 0.1s;">
             <div class="absolute top-0 left-0 w-full h-full opacity-10">
                 <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             </div>
             
-            <div class="relative z-10 reveal active"> 
+            <div class="relative z-10"> 
                 <p class="text-orange-200 text-sm tracking-widest mb-2 uppercase">Invitation</p>
                 <h1 class="serif text-2xl font-bold leading-snug mb-2">당신의 사랑이<br>한 권의 책이 됩니다</h1>
                 <div class="w-12 h-0.5 bg-orange-400 mx-auto my-4"></div>
@@ -116,7 +121,7 @@
 
         <div class="p-8 space-y-12 flex-grow"> 
             
-            <div class="text-center reveal">
+            <div class="text-center animate-entry" style="animation-delay: 0.2s;">
                 <div class="flex justify-center mb-3 text-orange-700">
                     <i data-lucide="book-open" class="w-6 h-6"></i>
                 </div>
@@ -129,7 +134,7 @@
                 </p>
             </div>
 
-            <div class="bg-gradient-to-br from-orange-50 to-white p-6 rounded-lg border border-orange-200 shadow-sm relative overflow-hidden reveal">
+            <div class="bg-gradient-to-br from-orange-50 to-white p-6 rounded-lg border border-orange-200 shadow-sm relative overflow-hidden animate-entry" style="animation-delay: 0.3s;">
                 <div class="absolute top-0 right-0 p-2 opacity-10">
                     <i data-lucide="bot" class="w-16 h-16 text-orange-900"></i>
                 </div>
@@ -154,7 +159,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm reveal">
+            <div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm animate-entry" style="animation-delay: 0.4s;">
                 <h3 class="serif text-lg font-bold text-stone-800 mb-2 flex items-center gap-2">
                     <i data-lucide="message-circle-question" class="w-5 h-5 text-stone-600"></i>
                     오늘의 심층 질문
@@ -172,7 +177,7 @@
                 </button>
             </div>
 
-            <div class="reveal">
+            <div class="animate-entry" style="animation-delay: 0.5s;">
                 <h3 class="text-center text-orange-900 font-bold mb-4">특별한 참여 혜택</h3>
                 <div class="space-y-3">
                     <div class="flex items-start gap-3">
@@ -196,7 +201,7 @@
                 </div>
             </div>
 
-            <div class="reveal">
+            <div class="animate-entry" style="animation-delay: 0.6s;">
                 <h3 class="text-center text-orange-900 font-bold mb-4 text-sm">자주 묻는 질문</h3>
                 <div class="space-y-2">
                     <details class="bg-white rounded-lg border border-stone-200 group cursor-pointer overflow-hidden">
@@ -229,7 +234,7 @@
                 </div>
             </div>
 
-            <div class="border-t border-orange-200 pt-6 text-center reveal">
+            <div class="border-t border-orange-200 pt-6 text-center animate-entry" style="animation-delay: 0.7s;">
                 <div class="bg-stone-50 rounded-lg p-3 mb-5 mx-1 border border-stone-100">
                     <p class="text-xs font-bold text-stone-600 mb-1 flex justify-center items-center gap-1">
                         <i data-lucide="shield-check" class="w-3 h-3 text-stone-500"></i>
@@ -284,34 +289,6 @@
     <script>
         lucide.createIcons();
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyXgxqgWrmIurQgIUENqH2TcSZa_gwZm53jY3caH9Y6bdf65v9UO_q5mrr-7939MBbi/exec";
-
-        // [핵심 수정] IntersectionObserver를 사용하여 화면에 들어오면 무조건 보이게 설정
-        document.addEventListener("DOMContentLoaded", function() {
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1 // 요소가 10%만 보여도 작동
-            };
-
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    // 화면에 들어왔을 때
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                        // 한번 보였으면 관찰 중단 (성능 최적화)
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-
-            const reveals = document.querySelectorAll('.reveal');
-            reveals.forEach(el => observer.observe(el));
-
-            // [안전장치] 혹시라도 JS가 꼬여서 안 보일 경우를 대비해 0.5초 뒤 강제로 전부 표시
-            setTimeout(() => {
-                reveals.forEach(el => el.classList.add('active'));
-            }, 500);
-        });
 
         // 토스트 알림 함수
         function showToast(message) {
