@@ -17,8 +17,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>감정서재 인터뷰 초대장</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -62,8 +64,8 @@
         }
 
         .animate-entry {
-            opacity: 0; /* 초기 상태 */
-            animation: fadeInUp 0.8s ease-out forwards; /* 로드 즉시 실행 */
+            opacity: 0; 
+            animation: fadeInUp 0.8s ease-out forwards; 
         }
 
         /* FAQ 아코디언 스타일 */
@@ -146,7 +148,16 @@
                     Gemini가 당신의 <strong>'연극 속 캐릭터 유형'</strong>을 찾아드립니다.
                 </p>
                 
-                <textarea id="personaInput" class="w-full p-3 text-sm border border-orange-200 rounded-md focus:outline-none focus:border-orange-500 bg-white/80 mb-3 resize-none" rows="2" placeholder="예: 저는 금사빠지만 한번 사랑하면 올인해요."></textarea>
+                <textarea 
+                    id="personaInput" 
+                    class="w-full p-3 text-sm border border-orange-200 rounded-md focus:outline-none focus:border-orange-500 bg-white/80 mb-3 resize-none" 
+                    rows="2" 
+                    placeholder="예: 저는 금사빠지만 한번 사랑하면 올인해요."
+                    spellcheck="false" 
+                    autocomplete="off" 
+                    autocorrect="off" 
+                    autocapitalize="off"
+                ></textarea>
                 
                 <button onclick="analyzePersona()" id="personaBtn" class="w-full bg-orange-600 text-white py-2 rounded-md text-sm font-medium hover:bg-orange-700 transition-colors flex justify-center items-center gap-2">
                     <span>분석하기</span>
@@ -287,7 +298,13 @@
     </div>
 
     <script>
-        lucide.createIcons();
+        // DOM 로드 후 실행하도록 변경하여 안정성 확보
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyXgxqgWrmIurQgIUENqH2TcSZa_gwZm53jY3caH9Y6bdf65v9UO_q5mrr-7939MBbi/exec";
 
         // 토스트 알림 함수
@@ -315,13 +332,13 @@
             });
         }
 
-        // [수정됨] API 호출 함수 - 객체를 전송하도록 변경
+        // API 호출 함수
         async function callGeminiAPI(dataObj) {
             try {
                 const response = await fetch(GAS_WEB_APP_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(dataObj) // 데이터 객체 전체를 전송 (type, input 등)
+                    body: JSON.stringify(dataObj) 
                 });
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
@@ -333,7 +350,6 @@
             }
         }
 
-        // [수정됨] 프롬프트 대신 'type'과 'input'을 전송
         async function analyzePersona() {
             const input = document.getElementById('personaInput').value.trim();
             const btn = document.getElementById('personaBtn');
@@ -351,7 +367,6 @@
             resultBox.classList.add('hidden');
 
             try {
-                // 프롬프트는 서버(GAS)에 숨겨져 있습니다. type만 보내면 됩니다.
                 const text = await callGeminiAPI({ 
                     type: "persona", 
                     input: input 
@@ -374,7 +389,6 @@
             }
         }
 
-        // [수정됨] 프롬프트 대신 'type'만 전송
         async function generateQuestion() {
             const btn = document.getElementById('questionBtn');
             const box = document.getElementById('questionBox');
@@ -382,7 +396,6 @@
             btn.innerHTML = '<span class="loader border-stone-400 border-t-stone-800"></span> 생성 중...';
             
             try {
-                // 프롬프트는 서버(GAS)에 숨겨져 있습니다.
                 const text = await callGeminiAPI({ 
                     type: "question" 
                 });
