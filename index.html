@@ -48,16 +48,7 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        /* 스크롤 애니메이션 */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease-out;
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        
         /* FAQ 아코디언 스타일 */
         details > summary {
             list-style: none;
@@ -103,7 +94,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             </div>
             
-            <div class="relative z-10 reveal active"> 
+            <div class="relative z-10"> 
                 <p class="text-orange-200 text-sm tracking-widest mb-2 uppercase">Invitation</p>
                 <h1 class="serif text-2xl font-bold leading-snug mb-2">당신의 사랑이<br>한 권의 책이 됩니다</h1>
                 <div class="w-12 h-0.5 bg-orange-400 mx-auto my-4"></div>
@@ -113,7 +104,7 @@
 
         <div class="p-8 space-y-12 flex-grow"> 
             
-            <div class="text-center reveal">
+            <div class="text-center">
                 <div class="flex justify-center mb-3 text-orange-700">
                     <i data-lucide="book-open" class="w-6 h-6"></i>
                 </div>
@@ -126,7 +117,7 @@
                 </p>
             </div>
 
-            <div class="bg-gradient-to-br from-orange-50 to-white p-6 rounded-lg border border-orange-200 shadow-sm relative overflow-hidden reveal">
+            <div class="bg-gradient-to-br from-orange-50 to-white p-6 rounded-lg border border-orange-200 shadow-sm relative overflow-hidden">
                 <div class="absolute top-0 right-0 p-2 opacity-10">
                     <i data-lucide="bot" class="w-16 h-16 text-orange-900"></i>
                 </div>
@@ -151,7 +142,7 @@
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm reveal">
+            <div class="bg-white p-6 rounded-lg border border-stone-200 shadow-sm">
                 <h3 class="serif text-lg font-bold text-stone-800 mb-2 flex items-center gap-2">
                     <i data-lucide="message-circle-question" class="w-5 h-5 text-stone-600"></i>
                     오늘의 심층 질문
@@ -169,7 +160,7 @@
                 </button>
             </div>
 
-            <div class="reveal">
+            <div>
                 <h3 class="text-center text-orange-900 font-bold mb-4">특별한 참여 혜택</h3>
                 <div class="grid grid-cols-1 gap-3">
                     <div class="bg-white p-4 rounded-xl border border-orange-100 shadow-sm flex items-center gap-4 hover:border-orange-300 transition-colors">
@@ -193,7 +184,7 @@
                 </div>
             </div>
 
-            <div class="reveal">
+            <div>
                 <h3 class="text-center text-orange-900 font-bold mb-4 text-sm">자주 묻는 질문</h3>
                 <div class="space-y-3">
                     <details class="bg-white rounded-lg border border-stone-200 group cursor-pointer overflow-hidden shadow-sm">
@@ -237,7 +228,7 @@
                 </div>
             </div>
 
-            <div class="border-t border-orange-200 pt-6 text-center reveal">
+            <div class="border-t border-orange-200 pt-6 text-center">
                 
                 <div class="mb-4 mx-4">
                     <p class="font-bold text-stone-400 text-[10px] mb-1">개인 정보 수집 동의</p>
@@ -290,21 +281,6 @@
     <script>
         lucide.createIcons();
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyXgxqgWrmIurQgIUENqH2TcSZa_gwZm53jY3caH9Y6bdf65v9UO_q5mrr-7939MBbi/exec";
-
-        // 스크롤 애니메이션
-        function revealOnScroll() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementVisible = 50; 
-                if (elementTop < windowHeight - elementVisible) {
-                    reveals[i].classList.add("active");
-                }
-            }
-        }
-        window.addEventListener("scroll", revealOnScroll);
-        revealOnScroll();
 
         // 토스트 알림 함수
         function showToast(message) {
