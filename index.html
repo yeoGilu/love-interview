@@ -49,16 +49,15 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* [애니메이션] 기본적으로 보이지만, JS가 로드되면 숨겼다 나타나게 함 */
+        /* [애니메이션] reveal 클래스 */
         .reveal {
-            position: relative;
-            transform: translateY(30px);
             opacity: 0;
-            transition: 1s all ease;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
         }
         .reveal.active {
-            transform: translateY(0);
             opacity: 1;
+            transform: translateY(0);
         }
 
         /* FAQ 아코디언 스타일 */
@@ -291,9 +290,7 @@
     </div>
 
     <script>
-        // 아이콘 생성 실행
         lucide.createIcons();
-        
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyXgxqgWrmIurQgIUENqH2TcSZa_gwZm53jY3caH9Y6bdf65v9UO_q5mrr-7939MBbi/exec";
 
         // 스크롤 애니메이션
@@ -309,7 +306,6 @@
             }
         }
         window.addEventListener("scroll", reveal);
-        // 페이지 로드 시 즉시 실행
         reveal();
 
         // 토스트 알림 함수
